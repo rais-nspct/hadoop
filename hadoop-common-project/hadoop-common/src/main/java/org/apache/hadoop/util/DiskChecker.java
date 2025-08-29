@@ -267,7 +267,10 @@ public class DiskChecker {
           ioe = e;
         }
       }
-      throw ioe;  // Just rethrow the last exception to signal failure.
+      // Throw the exception only if it's not about disk being full.
+      if (!ioe.getMessage().contains("No space left")) {
+        throw ioe;  // Just rethrow the last exception to signal failure.
+      }
     } catch(IOException e) {
       throw new DiskErrorException("Error checking directory " + dir, e);
     }
