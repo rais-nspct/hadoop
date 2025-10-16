@@ -457,6 +457,10 @@ public class AbfsConfiguration{
       DefaultValue = DEFAULT_FS_AZURE_ENABLE_CLIENT_TRANSACTION_ID)
   private boolean enableClientTransactionId;
 
+  @BooleanConfigurationValidatorAnnotation(ConfigurationKey = FS_AZURE_ENABLE_CREATE_BLOB_IDEMPOTENCY,
+      DefaultValue = DEFAULT_FS_AZURE_ENABLE_CREATE_BLOB_IDEMPOTENCY)
+  private boolean enableCreateIdempotency;
+
   private String clientProvidedEncryptionKey;
   private String clientProvidedEncryptionKeySHA;
 
@@ -1005,6 +1009,12 @@ public class AbfsConfiguration{
   }
 
   public boolean isConditionalCreateOverwriteEnabled() {
+    // If either the configured FS service type or the ingress service type is BLOB,
+    // conditional create-overwrite is not used.
+    if (getIsCreateIdempotencyEnabled() && (getFsConfiguredServiceType() == AbfsServiceType.BLOB
+        || getIngressServiceType() == AbfsServiceType.BLOB)) {
+      return false;
+    }
     return this.enableConditionalCreateOverwrite;
   }
 
@@ -1134,6 +1144,10 @@ public class AbfsConfiguration{
 
   public boolean getIsClientTransactionIdEnabled() {
     return enableClientTransactionId;
+  }
+
+  public boolean getIsCreateIdempotencyEnabled() {
+    return enableCreateIdempotency;
   }
 
   /**
