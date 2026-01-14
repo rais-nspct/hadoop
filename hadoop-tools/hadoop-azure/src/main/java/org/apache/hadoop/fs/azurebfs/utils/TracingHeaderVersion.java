@@ -38,7 +38,25 @@ public enum TracingHeaderVersion {
    *         :primaryRequestId:streamId:opType:retryHeader:ingressHandler
    *         :position:operatedBlobCount:operationSpecificHeader:httpOperationHeader
    */
-  V1("v1", 13);
+  V1("v1", 13),
+  /**
+   * Version 2 of the tracing header, which includes a version prefix and has 16 permanent fields.
+   * This version is used for the current tracing header schema.
+   * Schema: version:clientCorrelationId:clientRequestId:fileSystemId
+   *         :primaryRequestId:streamId:opType:retryHeader:ingressHandler
+   *         :position:operatedBlobCount:operationSpecificHeader:httpOperationHeader
+   *         :resourceUtilizationMetrics:fnsEndptConvertedIndicator
+   */
+  V2("v2", 15),
+  /**
+   * Version 0 of the aggregated metrics tracing header, which includes
+   * a version prefix and has 3 permanent fields.
+   * This version is used for the aggregated metrics tracing header schema.
+   * Schema: metricsVersion:List<AggregatedMetrics>
+   *      where AggregatedMetrics = clientCorrelationId:fileSystemId:aggregated-metrics
+   *      and AggregatedMetrics is enclosed within [] and separated by :
+   */
+  AV0("av0", 3);
 
   private final String versionString;
   private final int fieldCount;
@@ -59,7 +77,11 @@ public enum TracingHeaderVersion {
    * @return the latest version of the tracing header.
    */
   public static TracingHeaderVersion getCurrentVersion() {
-    return V1;
+    return V2;
+  }
+
+  public static TracingHeaderVersion getMetricsCurrentVersion() {
+    return AV0;
   }
 
   public int getFieldCount() {
